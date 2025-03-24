@@ -6,33 +6,25 @@ public class CharacterMovement : MonoBehaviour
     public float rotationSpeed = 200f; // Rotation speed in degrees per second
     public Animator animator;
     public CharacterController controller; // Use CharacterController
-    //public Rigidbody rigidbody; //Use rigidbody instead of character controller.
+    
+    public float jumpHeight;
+   
+
+    public Vector3 moveVelocity;
 
     void Start()
     {
         controller = GetComponent<CharacterController>(); //get Character Controller
-        //rigidbody = GetComponent<Rigidbody>(); //get rigidbody
+        
         animator = GetComponent<Animator>();
 
-        //print(Random.Range(0, 100));
     }
 
-    
+
     void Update()
     {
 
-        ////
-        /////
-        /////
-        ///
-        /////
-
-
-
-
-        //print(Input.GetKeyDown(KeyCode.O));
-
-        //bool isWalking = animator.GetBool("isWalking");
+        
 
 
 
@@ -40,11 +32,8 @@ public class CharacterMovement : MonoBehaviour
         {
 
             animator.SetBool("isWalking", false);
-            print("why not");
 
 
-
-            //animator.Play("walk");
 
         }
 
@@ -52,51 +41,104 @@ public class CharacterMovement : MonoBehaviour
 
         else if (!animator.GetBool("isWalking") && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D)))
         {
-           
-                animator.SetBool("isWalking", true);
-           
-            
-            //animator.Play("walk");
+
+            animator.SetBool("isWalking", true);
+
+
+
             
         }
 
-        
-        //|| Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D))
-
 
         
+
+
+
         
 
 
-
-
-        float horizontal = Input.GetAxis("Horizontal");
+            float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        Vector3 moveDirection = -1* new Vector3(horizontal, 0, vertical).normalized;
+        Vector3 moveDirection = -1 * new Vector3(horizontal, 0, vertical).normalized;
 
-        if (moveDirection.magnitude >= 0.1f )
+
+
+
+        moveVelocity.y -= 9.81f;
+
+
+        if (animator.GetBool("isJumping"))
+        {
+
+            moveDirection += new Vector3(0, jumpHeight, 0);
+            controller.Move(moveVelocity * Time.deltaTime);
+        }
+
+
+
+        if (moveDirection.magnitude >= 0.1f)
         {
             float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.Euler(0, targetAngle, 0), rotationSpeed * Time.deltaTime);
 
-            Vector3 moveVelocity = moveDirection * moveSpeed;
+
+            moveVelocity = moveDirection * moveSpeed;
             moveVelocity.y -= 9.81f;
-            controller.Move(moveVelocity * Time.deltaTime); //move character controller
-                                                            //rigidbody.velocity = moveVelocity; //move rigidbody
+
+
+
+            //when walking he jumps he stays up
+
+
+
+
+
+            controller.Move(moveVelocity * Time.deltaTime);
+            
 
 
         }
         else
         {
             animator.SetBool("isIdle", true);
-            animator.SetBool("isJumping", false);
+
+
+            moveVelocity.x = 0;
+            moveVelocity.z = 0;
+            controller.Move(moveVelocity * Time.deltaTime);
+            
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            animator.SetBool("isJumping", true);
-        }
-        
+        Jump();
+
+
+
+
     }
+
+
+    public void Jump()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+
+            if (!animator.GetBool("isJumping"))
+            {
+                animator.SetBool("isJumping", true);
+
+
+                Transform transform = GetComponent<Transform>();
+                //rigidbody.AddForce(Vector3.up);
+
+                //controller.Move(new Vector3(moveDirection.x, jumpHeight, moveDirection.z));
+            }
+        }
+        else if (!Input.GetKey(KeyCode.Space))
+        {
+
+            animator.SetBool("isJumping", false);
+        }
+    }
+
 }
