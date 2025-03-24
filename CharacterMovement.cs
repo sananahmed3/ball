@@ -94,7 +94,7 @@ public class CharacterMovement : MonoBehaviour
 
 
 
-            controller.Move(moveVelocity * Time.deltaTime);
+            //controller.Move(moveVelocity * Time.deltaTime);
             
 
 
@@ -106,10 +106,10 @@ public class CharacterMovement : MonoBehaviour
 
             moveVelocity.x = 0;
             moveVelocity.z = 0;
-            controller.Move(moveVelocity * Time.deltaTime);
+            
             
         }
-
+        controller.Move(moveVelocity * Time.deltaTime);
         Jump();
 
 
